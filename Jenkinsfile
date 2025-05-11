@@ -17,18 +17,19 @@ pipeline {
         }
 
         // Stage 3: SonarQube Analysis
-        stage('SonarQube Analysis') {
-            steps {
-
-
-                withSonarQubeEnv('SonarQube') { 
-                    
-
-                         // Must match the name in Jenkins
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=my-project'
-                }   
+    stage('SonarQube Analysis') {
+        steps {
+            withSonarQubeEnv('SonarQube') {
+                sh """
+                mvn sonar:sonar \
+                -Dsonar.projectKey=MY_UNIQUE_PROJECT_KEY \
+                -Dsonar.projectName="My Project" \
+                -Dsonar.host.url=http://192.168.33.10:9000 \
+                -Dsonar.login=${sqa_0ebf03d09e12f09e0297be451453ee01befdbc39}
+                """
             }
         }
+    }
 
         // Stage 4: Build Docker Image
         stage('Docker Build') {

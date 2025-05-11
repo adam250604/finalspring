@@ -1,53 +1,40 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'M3'
+        jdk 'jdk17'
+    }
+
+    environment {
+        SONARQUBE_SERVER = 'SonarQube'
+    }
+
     stages {
-        // Stage 1: Checkout from GitHub (automatically done by Jenkins SCM)
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
                 git 'https://github.com/adam250604/finalspring.git'
             }
         }
 
-        // Stage 2: Build with Maven
-        stage('Build') {
+        stage('Build with Maven') {
             steps {
                 sh 'mvn clean install'
             }
         }
 
-        // Stage 3: SonarQube Analysis
-    stage('SonarQube Analysis') {
-        steps {
-            withSonarQubeEnv('SonarQube') {
-                sh """
-                mvn sonar:sonar \
-                -Dsonar.projectKey=MY_UNIQUE_PROJECT_KEY \
-                -Dsonar.projectName="My Project" \
-                -Dsonar.host.url=http://192.168.33.10:9000 \
-                -Dsonar.login=${sqa_0ebf03d09e12f09e0297be451453ee01befdbc39}
-                """
-            }
-        }
-    }
-
-        // Stage 4: Build Docker Image
-        stage('Docker Build') {
+        stage('SonarQube Analysis') {
             steps {
-                script {
-                    docker.build("your-docker-image-name:latest")
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=finalspring -Dsonar.host.url=http://192.168.33.10:9000 -Dsonar.login=sqa_0ebf03d09e12f09e0297be451453ee01befdbc39YOUR_SONAR_TOKEN'
                 }
             }
         }
-    }
 
-    // Post-build actions (optional)
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed! Check logs.'
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t finalspring:latest .'
+            }
         }
     }
 }

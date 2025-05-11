@@ -10,7 +10,7 @@ pipeline {
         // Stage 1: Clone the repository
         stage('Checkout') {
             steps {
-                git branch: 'main', 
+                git branch: 'master', 
                 url: 'https://github.com/adam250604/finalspring.git'
             }
         }

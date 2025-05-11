@@ -26,7 +26,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=finalspring -Dsonar.host.url=http://192.168.33.10:9000 -Dsonar.login=sqa_0ebf03d09e12f09e0297be451453ee01befdbc39YOUR_SONAR_TOKEN'
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=finalspring -Dsonar.host.url=http://192.168.33.10:9000'
                 }
             }
         }

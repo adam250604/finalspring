@@ -19,9 +19,14 @@ pipeline {
         // Stage 3: SonarQube Analysis
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') { // Replace with your SonarQube server name
-                    sh 'mvn sonar:sonar'
-                }
+
+
+                withSonarQubeEnv('SonarQube') { 
+                    
+
+                         // Must match the name in Jenkins
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=my-project'
+                }   
             }
         }
 

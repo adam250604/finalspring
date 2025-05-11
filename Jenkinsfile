@@ -1,11 +1,16 @@
 pipeline {
     agent any
 
+    environment {
+        SONARQUBE_URL = 'http://192.168.33.10:9000'
+        DOCKER_IMAGE = 'my-java-app'
+    }
+
     stages {
-        // Stage 1: Checkout from GitHub (automatically done by Jenkins SCM)
+        // Stage 1: Clone from GitHub
         stage('Checkout') {
             steps {
-                git 'https://github.com/adam250604/finalspring.git'
+                git 'https://github.com/yourusername/your-repo.git'
             }
         }
 
@@ -17,36 +22,30 @@ pipeline {
         }
 
         // Stage 3: SonarQube Analysis
-        stage('SonarQube Analysis') {
+        stage('SonarQube Scan') {
             steps {
-
-
-                withSonarQubeEnv('SonarQube') { 
-                    
-
-                         // Must match the name in Jenkins
-                    sh 'mvn sonar:sonar -Dsonar.projectKey=my-project'
-                }   
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn sonar:sonar -Dsonar.projectKey=my-java-project'
+                }
             }
         }
 
-        // Stage 4: Build Docker Image
+        // Stage 4: Docker Build
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("your-docker-image-name:latest")
+                    docker.build("${DOCKER_IMAGE}:${env.BUILD_ID}")
                 }
             }
         }
     }
 
-    // Post-build actions (optional)
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'Pipeline succeeded!'
         }
         failure {
-            echo 'Pipeline failed! Check logs.'
+            echo 'Pipeline failed!'
         }
     }
 }
